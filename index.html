@@ -339,6 +339,7 @@
 
         /* Dialog */
         .dialog {
+            position: relative;
             background-color: #fff;
             padding: 20px;
             border-radius: 5px;
@@ -357,11 +358,114 @@
             top: 10px;
             right: 10px;
             cursor: pointer;
+            font-size: 25px;
         }
 
-        /* Content */
+        .confirm-button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            background-color: #1E9564;
+            color: white;
+            border-radius: 6px;
+            margin-top: 30px;
+            font-size: 16px;
+        }
+
         .content {
-            margin-bottom: 20px;
+            padding: 0 5px 0 5px;
+        }
+
+        .dialog-title {
+            margin: 10px 0 10px 0;
+            font-size: 20px;
+        }
+
+        .dialog-element {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .dialog-element-title {
+            font-size: 15px;
+            font-weight: bold;
+            margin: 0
+        }
+
+        .dialog-element-value {
+            font-size: 13px;
+            color: #B3B3B3;
+            margin: 0
+        }
+
+        .switch {
+            display: flex;
+        }
+
+        .switch input[type='checkbox'] {
+            height: 0;
+            width: 0;
+            visibility: hidden;
+            outline: none;
+        }
+
+        .switch label {
+            cursor: pointer;
+            width: 45px;
+            height: 20px;
+            background-color: rgb(0, 0, 0, 0.2);
+            display: block;
+            border-radius: 50em;
+            position: relative;
+            transition: 0.3s;
+            padding: 4px;
+            box-sizing: content-box;
+            outline: none;
+        }
+
+        .switch label > .slider.round {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border-radius: 50em;
+            transition: 0.3s;
+        }
+
+        .switch input:checked + label {
+            background-color: #1E9564;
+        }
+
+        .switch input:checked + label > .slider.round {
+            transform: translateX(calc(100% + 5px));
+            color: black;
+        }
+
+        .slider.round {
+            width: auto;
+            height: auto;
+            font-family: sans-serif;
+            text-align: center;
+            color: gray;
+            margin: 0;
+            padding: 0;
+        }
+
+        .event-name-input {
+            width: 100%;
+            padding: 15px 12px;
+            box-shadow: none;
+            border: 0;
+            border-radius: 8px;
+            background-color: #F0F0F0;
+            outline: none;
+        }
+
+        #event-desc {
+            margin-top: 16px;
         }
 
         .eventblock {
@@ -983,10 +1087,35 @@
         <div class="dialog">
             <span class="close-button">&times;</span>
             <div class="content">
-                <h2>Title</h2>
-                <p id="dialog-content">Content goes here...</p>
+                <h2 class="dialog-title">Thêm sự kiện</h2>
+                <div id="dialog-content">
+                    <input class="event-name-input" placeholder="Tên sự kiện" id="event-name"/>
+
+                    <textarea class="event-name-input" id="event-desc" rows="3" placeholder="Mô tả sự kiện"></textarea>
+
+                    <div class="dialog-element">
+                        <p class="dialog-element-title">Khi</p>
+                        <p class="dialog-element-value" id="dialog-selected-date"></p>
+                    </div>
+
+                    <div class="dialog-element">
+                        <p class="dialog-element-title">Nhắc nhở</p>
+                        <p class="dialog-element-value">Vào lúc 10:00 trước 3 ngày</p>
+                    </div>
+
+                    <div class="dialog-element">
+                        <p class="dialog-element-title">Báo thức nhắc nhở</p>
+                        <div class="switch">
+                            <input type="checkbox" id="switch" />
+                            <label for="switch">
+                              <span class="slider round"></span>
+                            </label>
+                          </div>
+                    </div>
+
+                    <button class="confirm-button" onclick="createNewEvent()">Thêm sự kiện</button>
+                </div>
             </div>
-            <button>Button</button>
         </div>
     </div>
     <script type="text/javascript" charset="utf-8">
@@ -1620,9 +1749,34 @@
             // s += "\nGi\u1EDD ho\u00E0ng \u0111\u1EA1o: " + getGioHoangDao(lunar.jd);
             // alert(s);
 
+            const selectedDateElement = document.getElementById('dialog-selected-date')
+
+            if(selectedDateElement) {
+                selectedDateElement.innerHTML = `${TUAN[today.getDay()]}, ${today.getDate()} tháng ${today.getMonth() + 1}, ${today.getFullYear()}`
+            }
+
+
             var overlay = document.querySelector(".overlay");
             var documentText=document.querySelector(".dialog")
             overlay.style.display = "flex";
+        }
+
+        function createNewEvent() {
+            const eventNameElement = document.getElementById('event-name')
+            const eventDescElement = document.getElementById('event-desc')
+            const eventNotifyElement = document.getElementById('switch')
+            const overlay = document.querySelector(".overlay")
+
+            if(!eventNameElement.value) return
+
+            localStorage.setItem(`${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`,
+                JSON.stringify({
+                    name: eventNameElement.value,
+                    desc: eventDescElement.value,
+                    isNotify: eventNotifyElement.checked
+                })
+            )
+            overlay.style.display = "none";
         }
 
     </script>
